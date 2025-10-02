@@ -3,12 +3,11 @@ using UnityEngine;
 public class VectorUtils : MonoBehaviour
 {
     public float x, y, z;
-
+    const float pi = 3.1416f;
     public VectorUtils(float x, float y)
     {
         this.x = x;
         this.y = y;
-        this.z = 0;
     }
 
     public VectorUtils(float x, float y, float z)
@@ -25,7 +24,7 @@ public class VectorUtils : MonoBehaviour
 
     public float Magnitud()
     {
-        return (float) Mathf.Sqrt(x * x + y * y + z * z);
+        return (float)Mathf.Sqrt(x * x + y * y + z * z);
     }
 
     public VectorUtils Normalize()
@@ -35,7 +34,7 @@ public class VectorUtils : MonoBehaviour
         {
             return new VectorUtils(0, 0, 0);
         }
-        
+
         return new VectorUtils(x / magnitude, y / magnitude, z / magnitude);
     }
 
@@ -49,7 +48,7 @@ public class VectorUtils : MonoBehaviour
         float newX = a.y * b.z - a.z * b.y;
         float newY = a.z * b.x - a.x * b.z;
         float newZ = a.x * b.y - a.y * b.x;
-        
+
         return new VectorUtils(newX, newY, newZ);
     }
 
@@ -64,12 +63,12 @@ public class VectorUtils : MonoBehaviour
         float magnitudA = a.Magnitud();
         float magnitudB = b.Magnitud();
 
-        if(magnitudA == 0 || magnitudB == 0)
+        if (magnitudA == 0 || magnitudB == 0)
         {
             return 0;
         }
 
-        return (float)Mathf.Acos(dot / (magnitudA * magnitudB)) * (180f / (float)Mathf.PI);
+        return (float)Mathf.Acos(dot / (magnitudA * magnitudB)) * (180f / pi);
     }
 
     public override string ToString()
