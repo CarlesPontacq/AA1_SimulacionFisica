@@ -1,7 +1,5 @@
-using UnityEngine;
 
-
-public class VectorUtils : MonoBehaviour
+public class VectorUtils
 {
     public float x, y, z;
     private bool threeD;
@@ -21,6 +19,16 @@ public class VectorUtils : MonoBehaviour
         this.z = z;
         threeD = true;
     }
+
+    public static VectorUtils operator + (VectorUtils a , VectorUtils b){
+        
+        return new VectorUtils(a.x + b.x , a.y + b.y);
+    }
+    public static VectorUtils operator - (VectorUtils a , VectorUtils b){
+        return new VectorUtils(a.x - b.x, a.y - b.y);
+
+    }
+
     public VectorUtils VectorAdditionSubtractioin(VectorUtils a, VectorUtils b, bool add)
     {
         if (threeD)
@@ -56,9 +64,9 @@ public class VectorUtils : MonoBehaviour
     {
         if (threeD)
         {
-            return (float)Mathf.Sqrt(x * x + y * y + z * z);
+            return (float)System.MathF.Sqrt(x * x + y * y + z * z);
         }
-        return (float)Mathf.Sqrt(x * x + y * y);
+        return (float)System.MathF.Sqrt(x * x + y * y);
     }
 
     public VectorUtils Normalize()
@@ -135,7 +143,7 @@ public class VectorUtils : MonoBehaviour
             return 0;
         }
 
-        return (float)Mathf.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
+        return (float)System.MathF.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
     }
 
     public string ToString()
@@ -151,7 +159,7 @@ public class VectorUtils : MonoBehaviour
     {
         if (a.threeD != b.threeD)
         {
-            Debug.Log("No tienen la misma dimension por lo que no puede hacer el calculo");
+            UnityEngine.Debug.Log("No tienen la misma dimension por lo que no puede hacer el calculo");
         }
         
         return a.threeD && b.threeD;
