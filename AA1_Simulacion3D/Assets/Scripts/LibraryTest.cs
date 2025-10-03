@@ -12,6 +12,7 @@ public class LibraryTest : MonoBehaviour
         Debug.Log("Producto escalar: " + test.DotProduct(test, test2));
         Debug.Log("Producto vectorial: " + test.CrossProduct3D(test, test2).ToString());
         Debug.Log("Angulo: " + test.Angle(test, test2));
+        Debug.Log("LERP: " + test.LERP(test2, 0.5f).ToString());
     }
 
     void Update()

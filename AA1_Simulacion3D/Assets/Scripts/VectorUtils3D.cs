@@ -11,29 +11,31 @@ public class VectorUtils3D
         this.z = z;
     }
 
+    public VectorUtils3D()
+    {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+
     public static VectorUtils3D operator + (VectorUtils3D a , VectorUtils3D b){
         
         return new VectorUtils3D(a.x + b.x , a.y + b.y, a.z + b.z);
     }
     public static VectorUtils3D operator - (VectorUtils3D a , VectorUtils3D b){
-        return new VectorUtils3D(a.x - b.x, a.y - b.y, a.z - b.z);
 
+        return new VectorUtils3D(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
     public static VectorUtils3D operator *(VectorUtils3D a, VectorUtils3D b)
     {
         return new VectorUtils3D(a.x * b.x, a.y * b.y, a.z * b.z);
-
     }
 
     public VectorUtils3D EscalarByProduct(float a)
     {
        
        return new VectorUtils3D(this.x * a, this.y * a, this.z * a);
-      
-        
-        
-
     }
 
     public float Magnitud()
@@ -50,15 +52,11 @@ public class VectorUtils3D
         }
 
         return new VectorUtils3D(x / magnitude, y / magnitude, z / magnitude);
-
     }
 
     public float DotProduct(VectorUtils3D a, VectorUtils3D b)
     {
-        
         return a.x * b.x + a.y * b.y + a.z * b.z;
-        
-       
     }
 
     public VectorUtils3D CrossProduct3D(VectorUtils3D a, VectorUtils3D b)
@@ -84,13 +82,29 @@ public class VectorUtils3D
         return (float)System.MathF.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
     }
 
-    public string ToString()
+    /// <summary>
+    /// t tiene que ser entre (0 <= t <= 1)
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public VectorUtils3D LERP(VectorUtils3D a,  float t)
     {
-        
-            return "(" + x + ", " + y + ", " + z + ")";
-        
-        
+        if(t < 0 || t > 1)
+        {
+            UnityEngine.Debug.Log("Error: t debe ser entre 0 y 1");
+            return new VectorUtils3D();
+        }
+
+        float newX = (1 - t) * x + t * a.x;
+        float newY = (1 - t) * y + t * a.y;
+        float newZ = (1 - t) * z + t * a.z;
+
+        return new VectorUtils3D(newX, newY, newZ);
     }
 
-
+    public string ToString()
+    {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }

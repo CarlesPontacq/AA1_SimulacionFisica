@@ -2,14 +2,18 @@
 public class VectorUtils2D
 {
     public float x, y, z;
-    private bool threeD;
     private float PI = 3.1416f;
 
     public VectorUtils2D(float x, float y)
     {
         this.x = x;
         this.y = y;
+    }
 
+    public VectorUtils2D()
+    {
+        this.x = 0;
+        this.y = 0;
     }
 
     public static VectorUtils2D operator + (VectorUtils2D a , VectorUtils2D b){
@@ -17,20 +21,18 @@ public class VectorUtils2D
         return new VectorUtils2D(a.x + b.x , a.y + b.y);
     }
     public static VectorUtils2D operator - (VectorUtils2D a , VectorUtils2D b){
-        return new VectorUtils2D(a.x - b.x, a.y - b.y);
 
+        return new VectorUtils2D(a.x - b.x, a.y - b.y);
     }
     public static VectorUtils2D operator *(VectorUtils2D a, VectorUtils2D b)
     {
         return new VectorUtils2D(a.x * b.x, a.y * b.y);
-
     }
 
 
     public VectorUtils2D EscalarByProduct(float a)
     {        
         return new VectorUtils2D(this.x * a, this.y * a);
-
     }
 
     public float Magnitud()
@@ -45,7 +47,6 @@ public class VectorUtils2D
         {
             return new VectorUtils2D(0, 0);
         }
-
        
         return new VectorUtils2D(x / magnitude, y / magnitude);
     }
@@ -74,9 +75,21 @@ public class VectorUtils2D
         return (float)System.MathF.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
     }
 
+    public VectorUtils2D LERP(VectorUtils2D a, float t)
+    {
+        if (t < 0 || t > 1)
+        {
+            UnityEngine.Debug.Log("Error: t debe ser entre 0 y 1");
+            return new VectorUtils2D();
+        }
+
+        float newX = (1 - t) * x + t * a.x;
+        float newY = (1 - t) * y + t * a.y;
+
+        return new VectorUtils2D(newX, newY);
+    }
     public string ToString()
     {
-
         return "(" + x + ", " + y + ")";
     }
 }
