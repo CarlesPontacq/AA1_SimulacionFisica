@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class LibraryTest : MonoBehaviour
 {
-    VectorUtils test = new VectorUtils(2, 2, 2);
-    VectorUtils test2 = new VectorUtils(1, 5, 12);
+    VectorUtils3D test = new VectorUtils3D(2, 2, 2);
+    VectorUtils3D test2 = new VectorUtils3D(1, 5, 12);
 
     void Start()
     {
