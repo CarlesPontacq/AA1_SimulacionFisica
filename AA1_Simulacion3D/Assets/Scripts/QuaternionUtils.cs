@@ -1,0 +1,242 @@
+
+using Unity.VisualScripting;
+using UnityEngine.UIElements;
+
+public class QuaternionUtils 
+{
+    float w;
+    float i;
+    float j;
+    float k;
+
+    QuaternionUtils(float w ,float i, float j, float k)
+    {
+        this.w = w;
+        this.i = i;
+        this.j = j;
+        this.k = k;
+    }
+
+    QuaternionUtils()
+    {
+        this.w = 0;
+        this.i = 0;
+        this.j = 0;
+        this.k = 0;
+    }
+
+    /// <summary>
+    /// THIS PASSES A CUATERNION AND A VECTOR AND RETURNS A QUATERNION ALREADY ANGLED
+    /// </summary>
+    /// <param name="v"></param>
+    /// <param name="angle"></param>
+    /// <returns></returns>
+
+    public QuaternionUtils AngleToQuaternion(VectorUtils3D v,float angle)
+    {
+       QuaternionUtils a =  new QuaternionUtils(0f,0f,0f,0f);
+        
+
+        a.w = System.MathF.Cos(angle/2);
+        float c = System.MathF.Sin(angle/2);
+
+        a.i = c * v.x;
+        a.j = c * v.y;
+        a.k = c * v.z;
+
+        return a;
+    }
+
+    float QuaternionToAngle(QuaternionUtils a)
+    {
+        VectorUtils3D v = new VectorUtils3D(0f,0f,0f);
+        float angle = 2.0f * System.MathF.Acos(a.w);
+        float divider = System.MathF.Sqrt(1.0f - a.w * a.w);
+
+        if (divider != 0.0)
+        {
+            // Calculate the axis
+            v.x = a.i / divider;
+            v.y = a.j / divider;
+            v.z = a.k / divider;
+        }
+        else
+        {
+            // Arbitrary normalized axis
+            v.x = 1;
+            v.y = 0;
+            v.z = 0;
+        }
+
+        return angle;
+
+    }
+
+    public void QuaternionFromXRotation(float angle)
+    {
+       
+        VectorUtils3D axis = new VectorUtils3D(1.0f, 0, 0);
+        QuaternionUtils newQuad = AngleToQuaternion(axis, angle);
+
+        w = newQuad.w;
+        i = newQuad.i;
+        j = newQuad.j;
+        k = newQuad.k;
+    }
+
+    public void QuaternionFromYRotation(float angle)
+    {
+
+        VectorUtils3D axis = new VectorUtils3D(0, 1.0f, 0);
+        QuaternionUtils newQuad = AngleToQuaternion(axis, angle);
+
+        w = newQuad.w;
+        i = newQuad.i;
+        j = newQuad.j;
+        k = newQuad.k;
+    }
+
+    public void QuaternionFromZRotation(float angle)
+    {
+
+        VectorUtils3D axis = new VectorUtils3D(0, 0, 1.0f);
+        QuaternionUtils newQuad = AngleToQuaternion(axis, angle);
+
+        w = newQuad.w;
+        i = newQuad.i;
+        j = newQuad.j;
+        k = newQuad.k;
+    }
+
+
+    public QuaternionUtils QuaternionFromEulerZYX(VectorUtils3D eulerZYX)
+    {
+       
+        
+        // Based on https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+        float cy = System.MathF.Cos(eulerZYX.z * 0.5f);
+        float sy = System.MathF.Sin(eulerZYX.z * 0.5f);
+        float cr = System.MathF.Cos(eulerZYX.x * 0.5f);
+        float sr = System.MathF.Sin(eulerZYX.x * 0.5f);
+        float cp = System.MathF.Cos(eulerZYX.y * 0.5f);
+        float sp = System.MathF.Sin(eulerZYX.y * 0.5f);
+        QuaternionUtils output = new QuaternionUtils();
+        output.w = cy * cr * cp + sy * sr * sp;
+        output.i = cy * sr * cp - sy * cr * sp;
+        output.j = cy * cr * sp + sy * sr * cp;
+        output.k = sy * cr * cp - cy * sr * sp;
+
+        return output;
+
+    }
+
+    public VectorUtils3D Quaternion_toEulerZYX(QuaternionUtils q)
+    {
+        VectorUtils3D output = new VectorUtils3D();
+        // Roll (x-axis rotation)
+        float sinr_cosp = +2.0f * (q.w * q.i + q.j * q.k);
+        float cosr_cosp = +1.0f - 2.0f * (q.i * q.i + q.j * q.j);
+        output.x = System.MathF.Atan2(sinr_cosp, cosr_cosp);
+
+        // Pitch (y-axis rotation)
+        float sinp = +2.0f * (q.w * q.j - q.k * q.i);
+        if (System.MathF.Abs(sinp) >= 1)
+            output.y = CopySign(output.PI / 2, sinp); // use 90 degrees if out of range
+        else
+            output.y = System.MathF.Asin(sinp);
+
+        // Yaw (z-axis rotation)
+        float siny_cosp = +2.0f * (q.w * q.k + q.i * q.j);
+        float cosy_cosp = +1.0f - 2.0f * (q.j * q.j + q.k * q.k);
+        output.z = System.MathF.Atan2(siny_cosp, cosy_cosp);
+
+        return output;
+    }
+
+    
+    public float QuaternionNorm()
+    {
+        return System.MathF.Sqrt(w * w + i * i + j * j + k * k);
+    }
+
+
+    public void QuaternionNormalize()
+    {
+        float len = QuaternionNorm();
+
+        w = w / len;
+        i = i / len;
+        j = j / len;
+        k = k / len;
+            
+    }
+
+
+    public void QuaternionMultiply(QuaternionUtils q)
+    {
+        /*
+        Formula from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm
+                 a*e - b*f - c*g - d*h
+            + i (b*e + a*f + c*h- d*g)
+            + j (a*g - b*h + c*e + d*f)
+            + k (a*h + b*g - c*f + d*e)
+        */
+        w = w * q.w - i * q.i - j * q.j - k * q.k;
+        i = i * q.w + w * q.i + j * q.k - k * q.j;
+        j = w * q.j - i * q.k + j * q.w + k * q.i;
+        k = w * q.k + i * q.j - j * q.i + k * q.w;
+    }
+
+    public VectorUtils3D QuaternionRotate(VectorUtils3D v)
+    {
+        VectorUtils3D result = new VectorUtils3D();
+
+        float ww = w * w;
+        float xx = i * i;
+        float yy = j * j;
+        float zz = k * k;
+        float wx = w * i;
+        float wy = w * j;
+        float wz = w * k;
+        float xy = i * j;
+        float xz = i * k;
+        float yz = j * k;
+
+        // Formula from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/transforms/index.htm
+        // p2.x = w*w*p1.x + 2*y*w*p1.z - 2*z*w*p1.y + x*x*p1.x + 2*y*x*p1.y + 2*z*x*p1.z - z*z*p1.x - y*y*p1.x;
+        // p2.y = 2*x*y*p1.x + y*y*p1.y + 2*z*y*p1.z + 2*w*z*p1.x - z*z*p1.y + w*w*p1.y - 2*x*w*p1.z - x*x*p1.y;
+        // p2.z = 2*x*z*p1.x + 2*y*z*p1.y + z*z*p1.z - 2*w*y*p1.x - y*y*p1.z + 2*w*x*p1.y - x*x*p1.z + w*w*p1.z;
+
+        result.x = ww * v.x + 2f * wy * v.z - 2f * wz * v.y +
+                    xx * v.x + 2 * xy * v.y + 2f * xz * v.z -
+                    zz * v.x - yy * v.x;
+
+        result.y = 2 * xy * v.x + yy * v.y + 2 * yz * v.z +
+                    2 * wz * v.x - zz * v.y + ww * v.y -
+                    2 * wx * v.z - xx * v.y;
+
+        result.z = 2 * xz * v.x + 2 * yz * v.y + zz * v.z -
+                    2 * wy * v.x - yy * v.z + 2 * wx * v.y -
+                    xx * v.z + ww * v.z;
+
+        
+        return result;
+    }
+
+
+
+    public void QuaternionPrint()
+    {
+        UnityEngine.Debug.Log("w : "+ w + ", i : " + i + ", j : "+j + " , k : " + k);
+            
+    }
+
+
+    float CopySign(float value, float sign)
+    {
+        return (sign >= 0f) ? System.MathF.Abs(value) : - System.MathF.Abs(value);
+    }
+
+
+
+}
