@@ -54,24 +54,24 @@ public class VectorUtils3D
         return new VectorUtils3D(x / magnitude, y / magnitude, z / magnitude);
     }
 
-    public float DotProduct(VectorUtils3D a, VectorUtils3D b)
+    public float DotProduct(VectorUtils3D b)
     {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+        return x * b.x + y * b.y + z * b.z;
     }
 
-    public VectorUtils3D CrossProduct3D(VectorUtils3D a, VectorUtils3D b)
+    public VectorUtils3D CrossProduct3D(VectorUtils3D b)
     {
-        float newX = a.y * b.z - a.z * b.y;
-        float newY = a.z * b.x - a.x * b.z;
-        float newZ = a.x * b.y - a.y * b.x;
+        float newX = y * b.z - z * b.y;
+        float newY = z * b.x - x * b.z;
+        float newZ = x * b.y - y * b.x;
 
         return new VectorUtils3D(newX, newY, newZ);
     }
 
-    public float Angle(VectorUtils3D a, VectorUtils3D b)
+    public float Angle(VectorUtils3D b)
     {
-        float dot = DotProduct(a, b);
-        float magnitudA = a.Magnitud();
+        float dot = DotProduct(b);
+        float magnitudA = Magnitud();
         float magnitudB = b.Magnitud();
 
         if (magnitudA == 0 || magnitudB == 0)
@@ -80,6 +80,15 @@ public class VectorUtils3D
         }
 
         return (float)System.MathF.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
+    }
+
+    public VectorPolarUtils3D ConvertToSpherical()
+    {
+        float newP = System.MathF.Sqrt(x * x + y * y + z * z);
+        float newTheta = System.MathF.Atan(y / x);
+        float newPhi = System.MathF.Acos(z / newP);
+
+        return new VectorPolarUtils3D(newP, newTheta, newPhi);
     }
 
     /// <summary>

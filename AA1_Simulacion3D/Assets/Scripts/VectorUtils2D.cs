@@ -16,19 +16,14 @@ public class VectorUtils2D
         this.y = 0;
     }
 
-    public static VectorUtils2D operator + (VectorUtils2D a , VectorUtils2D b){
+    public static VectorUtils2D operator + (VectorUtils2D a, VectorUtils2D b){
         
         return new VectorUtils2D(a.x + b.x , a.y + b.y);
     }
-    public static VectorUtils2D operator - (VectorUtils2D a , VectorUtils2D b){
+    public static VectorUtils2D operator - (VectorUtils2D a, VectorUtils2D b){
 
         return new VectorUtils2D(a.x - b.x, a.y - b.y);
     }
-    public static VectorUtils2D operator *(VectorUtils2D a, VectorUtils2D b)
-    {
-        return new VectorUtils2D(a.x * b.x, a.y * b.y);
-    }
-
 
     public VectorUtils2D EscalarByProduct(float a)
     {        
@@ -51,20 +46,20 @@ public class VectorUtils2D
         return new VectorUtils2D(x / magnitude, y / magnitude);
     }
 
-    public float DotProduct(VectorUtils2D a, VectorUtils2D b)
+    public float DotProduct(VectorUtils2D b)
     {
-        return a.x * b.x + a.y * b.y;
+        return x * b.x + y * b.y;
     }
 
-    public float CrossProduct2D(VectorUtils2D a, VectorUtils2D b)
+    public float CrossProduct2D(VectorUtils2D b)
     {
-        return a.x * b.y - a.y * b.x;
+        return x * b.y - y * b.x;
     }
 
-    public float Angle(VectorUtils2D a, VectorUtils2D b)
+    public float Angle(VectorUtils2D b)
     {
-        float dot = DotProduct(a, b);
-        float magnitudA = a.Magnitud();
+        float dot = DotProduct(b);
+        float magnitudA = Magnitud();
         float magnitudB = b.Magnitud();
 
         if (magnitudA == 0 || magnitudB == 0)
@@ -88,6 +83,14 @@ public class VectorUtils2D
 
         return new VectorUtils2D(newX, newY);
     }
+    public VectorPolarUtils2D ConvertToPolar()
+    {
+        float newR = System.MathF.Sqrt(x * x + y * y);
+        float newTheta = System.MathF.Atan(y / x);
+
+        return new VectorPolarUtils2D(newR, newTheta);
+    }
+
     public string ToString()
     {
         return "(" + x + ", " + y + ")";
