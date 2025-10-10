@@ -9,6 +9,8 @@ public class QuaternionUtils
     float j;
     float k;
 
+    float epsilon = 0.01f;
+
     QuaternionUtils(float w ,float i, float j, float k)
     {
         this.w = w;
@@ -237,6 +239,42 @@ public class QuaternionUtils
         return (sign >= 0f) ? System.MathF.Abs(value) : - System.MathF.Abs(value);
     }
 
+    public QuaternionUtils QuaternionSlerp(QuaternionUtils q, float t)
+    {
+        QuaternionUtils result = new QuaternionUtils();
 
+        // Based on http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
+        float cosHalfTheta = w * q.w + i * q.i + j * q.j + k * q.k;
+
+        // if q1=q2 or qa=-q2 then theta = 0 and we can return qa
+        if (System.MathF.Abs(cosHalfTheta) >= 1.0)
+        {
+            //Return this quaternion
+            return this;
+        }
+
+        float halfTheta = System.MathF.Acos(cosHalfTheta);
+        float sinHalfTheta = System.MathF.Sqrt(1.0f - cosHalfTheta * cosHalfTheta);
+        // If theta = 180 degrees then result is not fully defined
+        // We could rotate around any axis normal to q1 or q2
+        if (System.MathF.Abs(sinHalfTheta) < epsilon)
+        {
+            result.w = (w * 0.5f + q.w * 0.5f);
+            result.i = (i * 0.5f + q.i * 0.5f);
+            result.j = (j * 0.5f + q.j * 0.5f);
+            result.k = (k * 0.5f + q.k * 0.5f);
+        }
+        else
+        {
+            // Default quaternion calculation
+            float ratioA = System.MathF.Sin((1f - t) * halfTheta) / sinHalfTheta;
+            float ratioB = System.MathF.Sin(t * halfTheta) / sinHalfTheta;
+            result.w = (w * ratioA + q.w * ratioB);
+            result.i = (i * ratioA + q.i * ratioB);
+            result.j = (j * ratioA + q.j * ratioB);
+            result.k = (k * ratioA + q.k * ratioB);
+        }
+        return result;
+    }
 
 }
