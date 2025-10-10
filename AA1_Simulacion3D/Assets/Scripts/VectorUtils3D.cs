@@ -2,13 +2,20 @@
 public class VectorUtils3D
 {
     public float x, y, z;
-    private float PI = 3.1416f;
+    public float PI = 3.14159265359f;
 
     public VectorUtils3D(float x, float y, float z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public VectorUtils3D()
+    {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
 
     public static VectorUtils3D operator + (VectorUtils3D a , VectorUtils3D b){
