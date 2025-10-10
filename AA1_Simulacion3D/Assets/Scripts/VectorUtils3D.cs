@@ -11,29 +11,31 @@ public class VectorUtils3D
         this.z = z;
     }
 
+    public VectorUtils3D()
+    {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+
     public static VectorUtils3D operator + (VectorUtils3D a , VectorUtils3D b){
         
         return new VectorUtils3D(a.x + b.x , a.y + b.y, a.z + b.z);
     }
     public static VectorUtils3D operator - (VectorUtils3D a , VectorUtils3D b){
-        return new VectorUtils3D(a.x - b.x, a.y - b.y, a.z - b.z);
 
+        return new VectorUtils3D(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
     public static VectorUtils3D operator *(VectorUtils3D a, VectorUtils3D b)
     {
         return new VectorUtils3D(a.x * b.x, a.y * b.y, a.z * b.z);
-
     }
 
     public VectorUtils3D EscalarByProduct(float a)
     {
        
        return new VectorUtils3D(this.x * a, this.y * a, this.z * a);
-      
-        
-        
-
     }
 
     public float Magnitud()
@@ -50,30 +52,26 @@ public class VectorUtils3D
         }
 
         return new VectorUtils3D(x / magnitude, y / magnitude, z / magnitude);
-
     }
 
-    public float DotProduct(VectorUtils3D a, VectorUtils3D b)
+    public float DotProduct(VectorUtils3D b)
     {
-        
-        return a.x * b.x + a.y * b.y + a.z * b.z;
-        
-       
+        return x * b.x + y * b.y + z * b.z;
     }
 
-    public VectorUtils3D CrossProduct3D(VectorUtils3D a, VectorUtils3D b)
+    public VectorUtils3D CrossProduct3D(VectorUtils3D b)
     {
-        float newX = a.y * b.z - a.z * b.y;
-        float newY = a.z * b.x - a.x * b.z;
-        float newZ = a.x * b.y - a.y * b.x;
+        float newX = y * b.z - z * b.y;
+        float newY = z * b.x - x * b.z;
+        float newZ = x * b.y - y * b.x;
 
         return new VectorUtils3D(newX, newY, newZ);
     }
 
-    public float Angle(VectorUtils3D a, VectorUtils3D b)
+    public float Angle(VectorUtils3D b)
     {
-        float dot = DotProduct(a, b);
-        float magnitudA = a.Magnitud();
+        float dot = DotProduct(b);
+        float magnitudA = Magnitud();
         float magnitudB = b.Magnitud();
 
         if (magnitudA == 0 || magnitudB == 0)
@@ -84,13 +82,38 @@ public class VectorUtils3D
         return (float)System.MathF.Acos(dot / (magnitudA * magnitudB)) * (180f / PI);
     }
 
-    public string ToString()
+    public VectorPolarUtils3D ConvertToSpherical()
     {
-        
-            return "(" + x + ", " + y + ", " + z + ")";
-        
-        
+        float newP = System.MathF.Sqrt(x * x + y * y + z * z);
+        float newTheta = System.MathF.Atan(y / x);
+        float newPhi = System.MathF.Acos(z / newP);
+
+        return new VectorPolarUtils3D(newP, newTheta, newPhi);
     }
 
+    /// <summary>
+    /// t tiene que ser entre (0 <= t <= 1)
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public VectorUtils3D LERP(VectorUtils3D a,  float t)
+    {
+        if(t < 0 || t > 1)
+        {
+            UnityEngine.Debug.Log("Error: t debe ser entre 0 y 1");
+            return new VectorUtils3D();
+        }
 
+        float newX = (1 - t) * x + t * a.x;
+        float newY = (1 - t) * y + t * a.y;
+        float newZ = (1 - t) * z + t * a.z;
+
+        return new VectorUtils3D(newX, newY, newZ);
+    }
+
+    public string ToString()
+    {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
