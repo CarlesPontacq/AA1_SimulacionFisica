@@ -11,71 +11,115 @@ public class MyRobotController : MonoBehaviour
     [SerializeField] float mainAngularAcceleration = 0.1f;
     [SerializeField] float maxMainAngularVelocity = 0.5f;
 
-
+    VectorUtils3D currentPosition = new VectorUtils3D();
+    QuaternionUtils currentRotation = new QuaternionUtils();
+    VectorUtils3D currentVelocity = new VectorUtils3D();
+    
     float angularVelocity = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // Variables received from input
+    VectorUtils3D movementDirection = new VectorUtils3D();
+    bool movingForward = false;
+    bool movingBackwards = false;
+
+    bool tryingToRotate = false;
+    float angleToRotate = 0;
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 movementDirection = Vector3.zero;
-        bool movingForward = false;
-        bool movingBackward = false;
+        UpdatePhysicsVariables();
+        RegisterInputs();
+    }
+
+    private void FixedUpdate()
+    {
+        MoveRobotBody();
+    }
+
+    void RegisterInputs()
+    {
+        movementDirection = new VectorUtils3D();
+        movingForward = false;
+        movingBackwards = false;
 
         if (Input.GetKey(KeyCode.W))
         {
-            movementDirection = robotRB.transform.right;
+            movementDirection.AssignFromUnityVector(robotRB.transform.right);
             movingForward = true;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            movementDirection = -robotRB.transform.right;
-            movingBackward = true;
+            movementDirection.AssignFromUnityVector(-robotRB.transform.right);
+            movingBackwards = true;
         }
 
-        bool tryingToRotate = false;
-        float angleToRotate = angularVelocity;
-        if (Input.GetKey(KeyCode.A) && (movingForward || movingBackward))
+        tryingToRotate = false;
+        angleToRotate = angularVelocity;
+        if (Input.GetKey(KeyCode.A) && (movingForward || movingBackwards))
         {
             tryingToRotate = true;
             if (movingForward)
-                angleToRotate = -angularVelocity;
+                angleToRotate = -mainAngularAcceleration;
             else
-                angleToRotate = angularVelocity;
+                angleToRotate = mainAngularAcceleration;
         }
-        else if (Input.GetKey(KeyCode.D) && (movingForward || movingBackward))
+        else if (Input.GetKey(KeyCode.D) && (movingForward || movingBackwards))
         {
             tryingToRotate = true;
             if (movingForward)
-                angleToRotate = angularVelocity;
+                angleToRotate = mainAngularAcceleration;
             else
-                angleToRotate = -angularVelocity;
+                angleToRotate = -mainAngularAcceleration;
         }
+    }
 
-        robotRB.transform.Rotate(0, angleToRotate, 0);
+    void UpdatePhysicsVariables()
+    {
+        currentPosition.AssignFromUnityVector(transform.position);
+        currentRotation.AssignFromUnityQuaternion(transform.rotation);
+        currentVelocity.AssignFromUnityVector(robotRB.linearVelocity);
+    }
+
+    void MoveRobotBody()
+    {
+        VectorUtils3D rotationToMake = new VectorUtils3D(0, angleToRotate, 0);
+        if (angleToRotate > 0)
+        {
+            Debug.Log("deberia rotar");
+        }
+        Debug.Log(rotationToMake.ToString());
+        currentRotation.QuaternionRotate(rotationToMake);
 
         if (tryingToRotate)
         {
-            Vector3 currentVelocity = robotRB.linearVelocity;
-            robotRB.linearVelocity = Quaternion.Euler(0, angleToRotate, 0) * currentVelocity;
-
+            currentVelocity = currentRotation.Quaternion_toEulerZYX(currentRotation) * currentVelocity;
             angularVelocity += mainAngularAcceleration;
             if (angularVelocity > maxMainAngularVelocity)
                 angularVelocity = maxMainAngularVelocity;
         }
         else
             angularVelocity = 0;
+        
 
-        robotRB.AddForce(movementDirection * mainAcceleration);
-        if (robotRB.linearVelocity.magnitude > maxMainVelocity)
+        if (movementDirection.Magnitude() > 0.01f)
         {
-            robotRB.linearVelocity = movementDirection * maxMainVelocity;
+            Debug.Log("deberia moverse");
         }
+
+        VectorUtils3D resultingForce = new VectorUtils3D();
+        resultingForce = movementDirection * mainAcceleration;
+        robotRB.AddForce(resultingForce.GetAsUnityVector());
+
+        
+        currentVelocity.AssignFromUnityVector(robotRB.linearVelocity);
+        if (currentVelocity.Magnitude() > maxMainVelocity)
+        {
+            VectorUtils3D maxVelocity = movementDirection * maxMainVelocity;
+            currentVelocity = maxVelocity;
+        }
+        robotRB.linearVelocity = currentVelocity.GetAsUnityVector();
+        
     }
 
     void MoveJoint(int jointIndex, RotationType rotationType, float angle)

@@ -19,7 +19,7 @@ public class QuaternionUtils
         this.k = k;
     }
 
-    QuaternionUtils()
+    public QuaternionUtils()
     {
         this.w = 0;
         this.i = 0;
@@ -277,4 +277,11 @@ public class QuaternionUtils
         return result;
     }
 
+    public void AssignFromUnityQuaternion(UnityEngine.Quaternion quaternion)
+    {
+        w = quaternion.w; 
+        i = quaternion.x;
+        j = quaternion.y;
+        k = quaternion.z;
+    }
 }
