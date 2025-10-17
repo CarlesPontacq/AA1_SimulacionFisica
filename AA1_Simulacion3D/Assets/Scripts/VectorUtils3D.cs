@@ -32,6 +32,20 @@ public class VectorUtils3D
         return new VectorUtils3D(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
+    public static VectorUtils3D operator *(VectorUtils3D a, float b)
+    {
+        return new VectorUtils3D(a.x * b, a.y * b, a.z * b);
+    }
+
+    public static VectorUtils3D forward => new VectorUtils3D(0, 0, 1);
+    public static VectorUtils3D back => new VectorUtils3D(0, 0, -1);
+    public static VectorUtils3D up => new VectorUtils3D(0, 1, 0);
+    public static VectorUtils3D down => new VectorUtils3D(0, -1, 0);
+    public static VectorUtils3D right => new VectorUtils3D(1, 0, 0);
+    public static VectorUtils3D left => new VectorUtils3D(-1, 0, 0);
+    public static VectorUtils3D zero => new VectorUtils3D(0, 0, 0);
+    public static VectorUtils3D one => new VectorUtils3D(1, 1, 1);
+
     public VectorUtils3D EscalarByProduct(float a)
     {
        
