@@ -32,6 +32,20 @@ public class VectorUtils3D
         return new VectorUtils3D(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
+    public static VectorUtils3D operator *(VectorUtils3D a, float b)
+    {
+        return new VectorUtils3D(a.x * b, a.y * b, a.z * b);
+    }
+
+    public static VectorUtils3D forward => new VectorUtils3D(0, 0, 1);
+    public static VectorUtils3D back => new VectorUtils3D(0, 0, -1);
+    public static VectorUtils3D up => new VectorUtils3D(0, 1, 0);
+    public static VectorUtils3D down => new VectorUtils3D(0, -1, 0);
+    public static VectorUtils3D right => new VectorUtils3D(1, 0, 0);
+    public static VectorUtils3D left => new VectorUtils3D(-1, 0, 0);
+    public static VectorUtils3D zero => new VectorUtils3D(0, 0, 0);
+    public static VectorUtils3D one => new VectorUtils3D(1, 1, 1);
+
     public VectorUtils3D EscalarByProduct(float a)
     {
        
@@ -91,6 +105,15 @@ public class VectorUtils3D
         return new VectorPolarUtils3D(newP, newTheta, newPhi);
     }
 
+    public static VectorUtils3D ToVectorUtils3D(UnityEngine.Vector3 v)
+    {
+        VectorUtils3D retVec = new VectorUtils3D();
+        retVec.x = v.x;
+        retVec.y = v.y;
+        retVec.z = v.z;
+        return retVec;
+    }
+
     /// <summary>
     /// t tiene que ser entre (0 <= t <= 1)
     /// </summary>
@@ -112,8 +135,18 @@ public class VectorUtils3D
         return new VectorUtils3D(newX, newY, newZ);
     }
 
+    public float Distance(VectorUtils3D firstV, VectorUtils3D secondV)
+    {
+        float dx = firstV.x - secondV.x;
+        float dy = firstV.y - secondV.y;
+        float dz = firstV.z - secondV.z;
+        return System.MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
     public string ToString()
     {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+
 }
