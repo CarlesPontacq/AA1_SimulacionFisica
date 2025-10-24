@@ -20,8 +20,8 @@ public class JointArm : MonoBehaviour
 
     void Start()
     {
-        // Guardar posición y rotación inicial
-        ownQuad.ToQuaternionUtils(transform.rotation);
+        // Guardar posiciï¿½n y rotaciï¿½n inicial
+        ownQuad.AssignFromUnityQuaternion(transform.rotation);
         ownTrans = VectorUtils3D.ToVectorUtils3D(transform.position);
 
         if (!isEndEffector && child != null)
