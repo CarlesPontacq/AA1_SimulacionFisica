@@ -135,7 +135,7 @@ public class VectorUtils3D
         return new VectorUtils3D(newX, newY, newZ);
     }
 
-    public float Distance(VectorUtils3D firstV, VectorUtils3D secondV)
+    public static float Distance(VectorUtils3D firstV, VectorUtils3D secondV)
     {
         float dx = firstV.x - secondV.x;
         float dy = firstV.y - secondV.y;
@@ -148,5 +148,10 @@ public class VectorUtils3D
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
+
+    public UnityEngine.Vector3 GetAsUnityVector()
+    {
+        return new UnityEngine.Vector3(x, y, z);
+    }
 
 }
