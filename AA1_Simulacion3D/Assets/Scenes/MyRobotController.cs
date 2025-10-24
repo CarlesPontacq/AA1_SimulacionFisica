@@ -1,4 +1,6 @@
 using UnityEngine;
+using QuaternionUtility;
+using Unity.VisualScripting.FullSerializer.Internal;
 
 public class MyRobotController : MonoBehaviour
 {
@@ -83,44 +85,46 @@ public class MyRobotController : MonoBehaviour
 
     void MoveRobotBody()
     {
-        VectorUtils3D rotationToMake = new VectorUtils3D(0, angleToRotate, 0);
-        if (angleToRotate > 0)
-        {
-            Debug.Log("deberia rotar");
-        }
-        Debug.Log(rotationToMake.ToString());
-        currentRotation.QuaternionRotate(rotationToMake);
-
         if (tryingToRotate)
         {
-            currentVelocity = currentRotation.Quaternion_toEulerZYX(currentRotation) * currentVelocity;
-            angularVelocity += mainAngularAcceleration;
-            if (angularVelocity > maxMainAngularVelocity)
-                angularVelocity = maxMainAngularVelocity;
+            VectorUtils3D localY = currentRotation.Rotate(VectorUtils3D.up);
+            QuaternionUtils deltaRot = new QuaternionUtils().AngleToQuaternion(localY, angleToRotate * Time.fixedDeltaTime);
+            currentRotation.Multiply(deltaRot);
+            currentRotation.Normalize();
+            transform.rotation = currentRotation.ToUnityQuaternion();
         }
-        else
-            angularVelocity = 0;
-        
 
-        if (movementDirection.Magnitude() > 0.01f)
+        VectorUtils3D currentVel = VectorUtils3D.ToVectorUtils3D(robotRB.linearVelocity);
+        float speed = currentVel.Magnitude();
+
+        if (speed > 0.001f)
         {
-            Debug.Log("deberia moverse");
+            VectorUtils3D forwardDir = currentRotation.Rotate(VectorUtils3D.right);
+
+            float dirSign = Mathf.Sign(forwardDir.DotProduct(currentVel));
+
+            VectorUtils3D redirectedVelocity = forwardDir.Normalize() * speed * dirSign;
+            robotRB.linearVelocity = redirectedVelocity.GetAsUnityVector();
         }
 
-        VectorUtils3D resultingForce = new VectorUtils3D();
-        resultingForce = movementDirection * mainAcceleration;
-        robotRB.AddForce(resultingForce.GetAsUnityVector());
-
-        
-        currentVelocity.AssignFromUnityVector(robotRB.linearVelocity);
-        if (currentVelocity.Magnitude() > maxMainVelocity)
+        if (movingForward || movingBackwards)
         {
-            VectorUtils3D maxVelocity = movementDirection * maxMainVelocity;
-            currentVelocity = maxVelocity;
+            VectorUtils3D forwardDir = currentRotation.Rotate(VectorUtils3D.right);
+            float dirMultiplier = movingForward ? 1f : -1f;
+
+            VectorUtils3D resultingForce = forwardDir * mainAcceleration * dirMultiplier;
+            robotRB.AddForce(resultingForce.GetAsUnityVector(), ForceMode.Acceleration);
+
+            currentVelocity.AssignFromUnityVector(robotRB.linearVelocity);
+            if (currentVelocity.Magnitude() > maxMainVelocity)
+            {
+                VectorUtils3D clampedVelocity = forwardDir * maxMainVelocity * dirMultiplier;
+                robotRB.linearVelocity = clampedVelocity.GetAsUnityVector();
+            }
         }
-        robotRB.linearVelocity = currentVelocity.GetAsUnityVector();
-        
     }
+
+
 
     void MoveJoint(int jointIndex, RotationType rotationType, float angle)
     {
