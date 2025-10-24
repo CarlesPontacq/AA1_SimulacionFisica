@@ -14,7 +14,7 @@ namespace QuaternionUtility
         float j;
         float k;
 
-        float epsilon = 0.01f;
+        const float epsilon = 0.01f;
 
         public QuaternionUtils(float w ,float i, float j, float k)
         {
@@ -42,14 +42,16 @@ namespace QuaternionUtility
         public QuaternionUtils AngleToQuaternion(VectorUtils3D v,float angle)
         {
            QuaternionUtils a =  new QuaternionUtils(0f,0f,0f,0f);
-        
 
+            v.Normalize();
             a.w = System.MathF.Cos(angle/2);
             float c = System.MathF.Sin(angle/2);
 
             a.i = c * v.x;
             a.j = c * v.y;
             a.k = c * v.z;
+
+
 
             return a;
         }
@@ -188,10 +190,12 @@ namespace QuaternionUtility
                 + j (a*g - b*h + c*e + d*f)
                 + k (a*h + b*g - c*f + d*e)
             */
-            w = w * q.w - i * q.i - j * q.j - k * q.k;
-            i = i * q.w + w * q.i + j * q.k - k * q.j;
-            j = w * q.j - i * q.k + j * q.w + k * q.i;
-            k = w * q.k + i * q.j - j * q.i + k * q.w;
+            float tw = w, ti = i, tj = j, tk = k;
+
+            w = tw * q.w - ti * q.i - tj * q.j - tk * q.k;
+            i = tw * q.i + ti * q.w + tj * q.k - tk * q.j;
+            j = tw * q.j - ti * q.k + tj * q.w + tk * q.i;
+            k = tw * q.k + ti * q.j - tj * q.i + tk * q.w;
         }
 
         public VectorUtils3D Rotate(VectorUtils3D v)

@@ -105,6 +105,15 @@ public class VectorUtils3D
         return new VectorPolarUtils3D(newP, newTheta, newPhi);
     }
 
+    public static VectorUtils3D ToVectorUtils3D(UnityEngine.Vector3 v)
+    {
+        VectorUtils3D retVec = new VectorUtils3D();
+        retVec.x = v.x;
+        retVec.y = v.y;
+        retVec.z = v.z;
+        return retVec;
+    }
+
     /// <summary>
     /// t tiene que ser entre (0 <= t <= 1)
     /// </summary>
@@ -126,8 +135,18 @@ public class VectorUtils3D
         return new VectorUtils3D(newX, newY, newZ);
     }
 
+    public float Distance(VectorUtils3D firstV, VectorUtils3D secondV)
+    {
+        float dx = firstV.x - secondV.x;
+        float dy = firstV.y - secondV.y;
+        float dz = firstV.z - secondV.z;
+        return System.MathF.Sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
     public string ToString()
     {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+
 }
