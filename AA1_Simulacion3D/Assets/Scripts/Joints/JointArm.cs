@@ -19,7 +19,7 @@ public class JointArm : MonoBehaviour
         direction.x = transform.position.x;
         direction.y = transform.position.y;
         direction.z = transform.position.z;
-        ownQuad.ToQuaternionUtils(transform.rotation);
+        ownQuad.AssignFromUnityQuaternion(transform.rotation);
        ownTrans = VectorUtils3D.ToVectorUtils3D(transform.position);
         //distanceToChild = VectorUtils3D.Distance(ownTrans, child.position);
     }
