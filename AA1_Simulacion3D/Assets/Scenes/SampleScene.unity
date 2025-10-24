@@ -436,10 +436,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joints: []
   robotRB: {fileID: 391460044}
-  mainAcceleration: 6
+  mainAcceleration: 20
   maxMainVelocity: 10
-  mainAngularAcceleration: 0.005
-  maxMainAngularVelocity: 0.5
+  mainAngularAcceleration: 2
+  maxMainAngularVelocity: 2
 --- !u!54 &391460044
 Rigidbody:
   m_ObjectHideFlags: 0

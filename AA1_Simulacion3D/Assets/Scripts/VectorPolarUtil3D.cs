@@ -52,7 +52,7 @@ public class VectorPolarUtils3D : MonoBehaviour
     public float Magnitud()
     {
         VectorUtils3D tempVect = ConvertToCartesian();
-        float magnitude = tempVect.Magnitud();
+        float magnitude = tempVect.Magnitude();
         return magnitude;
     }
 
