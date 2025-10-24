@@ -15,6 +15,13 @@ namespace QuaternionUtility
         float k;
 
         const float epsilon = 0.01f;
+    public QuaternionUtils()
+    {
+        this.w = 0;
+        this.i = 0;
+        this.j = 0;
+        this.k = 0;
+    }
 
         public QuaternionUtils(float w ,float i, float j, float k)
         {
@@ -308,5 +315,13 @@ namespace QuaternionUtility
             k = q.z;
         }
 
+    }
+
+    public void AssignFromUnityQuaternion(UnityEngine.Quaternion quaternion)
+    {
+        w = quaternion.w; 
+        i = quaternion.x;
+        j = quaternion.y;
+        k = quaternion.z;
     }
 }

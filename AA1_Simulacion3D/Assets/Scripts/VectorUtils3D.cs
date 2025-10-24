@@ -1,4 +1,7 @@
 
+using System.Diagnostics;
+using System.Numerics;
+
 public class VectorUtils3D
 {
     public float x, y, z;
@@ -31,6 +34,10 @@ public class VectorUtils3D
     {
         return new VectorUtils3D(a.x * b.x, a.y * b.y, a.z * b.z);
     }
+    public static VectorUtils3D operator *(VectorUtils3D a, float b)
+    {
+        return new VectorUtils3D(a.x * b, a.y * b, a.z * b);
+    }
 
     public static VectorUtils3D operator *(VectorUtils3D a, float b)
     {
@@ -52,14 +59,14 @@ public class VectorUtils3D
        return new VectorUtils3D(this.x * a, this.y * a, this.z * a);
     }
 
-    public float Magnitud()
+    public float Magnitude()
     {
         return (float)System.MathF.Sqrt(x * x + y * y + z * z);
     }
 
     public VectorUtils3D Normalize()
     {
-        float magnitude = Magnitud();
+        float magnitude = Magnitude();
         if (magnitude == 0)
         {
             return new VectorUtils3D(0, 0, 0);
@@ -85,8 +92,8 @@ public class VectorUtils3D
     public float Angle(VectorUtils3D b)
     {
         float dot = DotProduct(b);
-        float magnitudA = Magnitud();
-        float magnitudB = b.Magnitud();
+        float magnitudA = Magnitude();
+        float magnitudB = b.Magnitude();
 
         if (magnitudA == 0 || magnitudB == 0)
         {
@@ -148,5 +155,15 @@ public class VectorUtils3D
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
+    public void AssignFromUnityVector(UnityEngine.Vector3 vector)
+    {
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
+    }
 
+    public UnityEngine.Vector3 GetAsUnityVector()
+    {
+        return new UnityEngine.Vector3(x, y, z);
+    }
 }
