@@ -39,11 +39,6 @@ public class VectorUtils3D
         return new VectorUtils3D(a.x * b, a.y * b, a.z * b);
     }
 
-    public static VectorUtils3D operator *(VectorUtils3D a, float b)
-    {
-        return new VectorUtils3D(a.x * b, a.y * b, a.z * b);
-    }
-
     public static VectorUtils3D forward => new VectorUtils3D(0, 0, 1);
     public static VectorUtils3D back => new VectorUtils3D(0, 0, -1);
     public static VectorUtils3D up => new VectorUtils3D(0, 1, 0);

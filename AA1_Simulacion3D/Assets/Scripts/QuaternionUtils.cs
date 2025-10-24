@@ -7,7 +7,7 @@ namespace QuaternionUtility
 {
 
 
-    public class QuaternionUtils 
+    public class QuaternionUtils
     {
         float w;
         float i;
@@ -15,22 +15,6 @@ namespace QuaternionUtility
         float k;
 
         const float epsilon = 0.01f;
-    public QuaternionUtils()
-    {
-        this.w = 0;
-        this.i = 0;
-        this.j = 0;
-        this.k = 0;
-    }
-
-        public QuaternionUtils(float w ,float i, float j, float k)
-        {
-            this.w = w;
-            this.i = i;
-            this.j = j;
-            this.k = k;
-        }
-
         public QuaternionUtils()
         {
             this.w = 0;
@@ -39,6 +23,15 @@ namespace QuaternionUtility
             this.k = 0;
         }
 
+        public QuaternionUtils(float w, float i, float j, float k)
+        {
+            this.w = w;
+            this.i = i;
+            this.j = j;
+            this.k = k;
+        }
+
+
         /// <summary>
         /// THIS PASSES A CUATERNION AND A VECTOR AND RETURNS A QUATERNION ALREADY ANGLED
         /// </summary>
@@ -46,13 +39,13 @@ namespace QuaternionUtility
         /// <param name="angle"></param>
         /// <returns></returns>
 
-        public QuaternionUtils AngleToQuaternion(VectorUtils3D v,float angle)
+        public QuaternionUtils AngleToQuaternion(VectorUtils3D v, float angle)
         {
-           QuaternionUtils a =  new QuaternionUtils(0f,0f,0f,0f);
+            QuaternionUtils a = new QuaternionUtils(0f, 0f, 0f, 0f);
 
             v.Normalize();
-            a.w = System.MathF.Cos(angle/2);
-            float c = System.MathF.Sin(angle/2);
+            a.w = System.MathF.Cos(angle / 2);
+            float c = System.MathF.Sin(angle / 2);
 
             a.i = c * v.x;
             a.j = c * v.y;
@@ -65,7 +58,7 @@ namespace QuaternionUtility
 
         public float ToAngle(QuaternionUtils a)
         {
-            VectorUtils3D v = new VectorUtils3D(0f,0f,0f);
+            VectorUtils3D v = new VectorUtils3D(0f, 0f, 0f);
             float angle = 2.0f * System.MathF.Acos(a.w);
             float divider = System.MathF.Sqrt(1.0f - a.w * a.w);
 
@@ -90,7 +83,7 @@ namespace QuaternionUtility
 
         public void FromXRotation(float angle)
         {
-       
+
             VectorUtils3D axis = new VectorUtils3D(1.0f, 0, 0);
             QuaternionUtils newQuad = AngleToQuaternion(axis, angle);
 
@@ -127,8 +120,8 @@ namespace QuaternionUtility
 
         public QuaternionUtils FromEulerZYX(VectorUtils3D eulerZYX)
         {
-       
-        
+
+
             // Based on https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
             float cy = System.MathF.Cos(eulerZYX.z * 0.5f);
             float sy = System.MathF.Sin(eulerZYX.z * 0.5f);
@@ -169,7 +162,7 @@ namespace QuaternionUtility
             return output;
         }
 
-    
+
         public float Norm()
         {
             return System.MathF.Sqrt(w * w + i * i + j * j + k * k);
@@ -184,7 +177,7 @@ namespace QuaternionUtility
             i = i / len;
             j = j / len;
             k = k / len;
-            
+
         }
 
 
@@ -237,7 +230,7 @@ namespace QuaternionUtility
                         2 * wy * v.x - yy * v.z + 2 * wx * v.y -
                         xx * v.z + ww * v.z;
 
-        
+
             return result;
         }
 
@@ -245,14 +238,14 @@ namespace QuaternionUtility
 
         public void Print()
         {
-            UnityEngine.Debug.Log("w : "+ w + ", i : " + i + ", j : "+j + " , k : " + k);
-            
+            UnityEngine.Debug.Log("w : " + w + ", i : " + i + ", j : " + j + " , k : " + k);
+
         }
 
 
         public float CopySign(float value, float sign)
         {
-            return (sign >= 0f) ? System.MathF.Abs(value) : - System.MathF.Abs(value);
+            return (sign >= 0f) ? System.MathF.Abs(value) : -System.MathF.Abs(value);
         }
 
         public QuaternionUtils Slerp(QuaternionUtils q, float t)
@@ -304,24 +297,26 @@ namespace QuaternionUtility
             result.z = k;
 
 
-            return result;  
+            return result;
         }
 
-        public void ToQuaternionUtils(Quaternion q)
+        public string ToString()
         {
-            w = q.w;
-            i = q.x;
-            j = q.y;
-            k = q.z;
+            return "(i:" + i + ", j:" + j + ", k:" + k + ", w:" + w + ")";
         }
 
-    }
+        public void AssignFromUnityQuaternion(UnityEngine.Quaternion quaternion)
+        {
+            w = quaternion.w;
+            i = quaternion.x;
+            j = quaternion.y;
+            k = quaternion.z;
+        }
 
-    public void AssignFromUnityQuaternion(UnityEngine.Quaternion quaternion)
-    {
-        w = quaternion.w; 
-        i = quaternion.x;
-        j = quaternion.y;
-        k = quaternion.z;
+        public UnityEngine.Quaternion GetAsUnityQuaternion()
+        {
+            return new UnityEngine.Quaternion(i, j, k, w);
+        }
     }
 }
+
