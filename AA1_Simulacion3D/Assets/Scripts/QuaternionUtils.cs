@@ -294,6 +294,20 @@ namespace QuaternionUtility
             return result;
         }
 
+        public QuaternionUtils MultiplyWithInverse(QuaternionUtils other)
+        {
+            // Calcula el conjugado
+            QuaternionUtils inverse = new QuaternionUtils(other.w, -other.i, -other.j, -other.k);
+
+            // Multiplicamos este quaternon por el inverso
+            float rw = w * inverse.w - i * inverse.i - j * inverse.j - k * inverse.k;
+            float ri = w * inverse.i + i * inverse.w + j * inverse.k - k * inverse.j;
+            float rj = w * inverse.j - i * inverse.k + j * inverse.w + k * inverse.i;
+            float rk = w * inverse.k + i * inverse.j - j * inverse.i + k * inverse.w;
+
+            return new QuaternionUtils(rw, ri, rj, rk);
+        }
+
         public Quaternion ToUnityQuaternion()
         {
             Quaternion result;
