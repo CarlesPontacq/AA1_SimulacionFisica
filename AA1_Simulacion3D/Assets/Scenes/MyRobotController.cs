@@ -13,6 +13,8 @@ public class MyRobotController : MonoBehaviour
     [SerializeField] float mainAngularAcceleration = 0.1f;
     [SerializeField] float maxMainAngularVelocity = 0.5f;
 
+    [SerializeField] WheelsController wheelsScript;
+
     VectorUtils3D currentPosition = new VectorUtils3D();
     QuaternionUtils currentRotation = new QuaternionUtils();
     VectorUtils3D currentVelocity = new VectorUtils3D();
@@ -60,6 +62,8 @@ public class MyRobotController : MonoBehaviour
         angleToRotate = angularVelocity;
         if (Input.GetKey(KeyCode.A) && (movingForward || movingBackwards))
         {
+            wheelsScript.TurnWheels(WheelsController.Direction.LEFT);
+
             tryingToRotate = true;
             if (movingForward)
                 angleToRotate = -mainAngularAcceleration;
@@ -68,11 +72,17 @@ public class MyRobotController : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.D) && (movingForward || movingBackwards))
         {
+            wheelsScript.TurnWheels(WheelsController.Direction.RIGHT);
+
             tryingToRotate = true;
             if (movingForward)
                 angleToRotate = mainAngularAcceleration;
             else
                 angleToRotate = -mainAngularAcceleration;
+        }
+        else
+        {
+            wheelsScript.TurnWheels(WheelsController.Direction.STRAIGHT);
         }
     }
 
@@ -122,12 +132,5 @@ public class MyRobotController : MonoBehaviour
                 robotRB.linearVelocity = clampedVelocity.GetAsUnityVector();
             }
         }
-    }
-
-
-
-    void MoveJoint(int jointIndex, RotationType rotationType, float angle)
-    {
-
     }
 }
