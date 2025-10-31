@@ -2,6 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
 using UnityEngine;
+using System;
 
 namespace QuaternionUtility
 {
@@ -15,12 +16,17 @@ namespace QuaternionUtility
         float k;
 
         const float epsilon = 0.01f;
+
+        public const float Degree2Rad = MathF.PI / 180f;
+
+        public const float Rad2Deg = 57.29578f;
+
         public QuaternionUtils()
         {
-            this.w = 0;
-            this.i = 0;
-            this.j = 0;
-            this.k = 0;
+            this.w = 1f;
+            this.i = 0f;
+            this.j = 0f;
+            this.k = 0f;
         }
 
         public QuaternionUtils(float w, float i, float j, float k)
@@ -32,6 +38,8 @@ namespace QuaternionUtility
         }
 
 
+        
+
         /// <summary>
         /// THIS PASSES A CUATERNION AND A VECTOR AND RETURNS A QUATERNION ALREADY ANGLED
         /// </summary>
@@ -41,7 +49,7 @@ namespace QuaternionUtility
 
         public QuaternionUtils AngleToQuaternion(VectorUtils3D v, float angle)
         {
-            QuaternionUtils a = new QuaternionUtils(0f, 0f, 0f, 0f);
+            QuaternionUtils a = new QuaternionUtils();
 
             v.Normalize();
             a.w = System.MathF.Cos(angle / 2);

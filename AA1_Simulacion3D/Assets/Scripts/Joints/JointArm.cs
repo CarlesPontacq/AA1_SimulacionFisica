@@ -8,6 +8,7 @@ public class JointArm : MonoBehaviour
     [SerializeField] bool isEndEffector;
     [SerializeField] public bool isSelected;
     [SerializeField] Transform child;
+    [SerializeField] LineRenderer lr;
 
 
     QuaternionUtils ownQuad = new QuaternionUtils();
@@ -20,6 +21,7 @@ public class JointArm : MonoBehaviour
 
     void Start()
     {
+        
         // Guardar posici�n y rotaci�n inicial
         ownQuad.AssignFromUnityQuaternion(transform.rotation);
         ownTrans = VectorUtils3D.ToVectorUtils3D(transform.position);
@@ -29,6 +31,8 @@ public class JointArm : MonoBehaviour
             childTrans = VectorUtils3D.ToVectorUtils3D(child.position);
             distanceToChild = VectorUtils3D.Distance(ownTrans, childTrans);
             initialDir = (childTrans - ownTrans).Normalize();
+            lr = GetComponent<LineRenderer>();
+            lr.positionCount = 2;
         }
 
     }
@@ -37,52 +41,57 @@ public class JointArm : MonoBehaviour
     {
 
         // Initialize a temporary rotation change variable
-        QuaternionUtils deltaRot = null;
+        QuaternionUtils deltaRot = new QuaternionUtils(); // Quaternión identidad (w=1) para este frame
 
         if (isSelected)
         {
-            float angle = 1f * Time.deltaTime; // Rotation speed
-            VectorUtils3D axis = VectorUtils3D.zero;
+            // Velocidad de rotación en radianes
+            float angleSpeed = 30f * Time.deltaTime * QuaternionUtils.Degree2Rad;
 
-            // --- Rotation around LOCAL X-axis (Pitch / Up-Down) ---
-            if (Input.GetKey(KeyCode.W))
+
+            // Rotación Pitch (W/S) sobre el eje X LOCAL
+            if (Input.GetKey(KeyCode.UpArrow))
             {
-                // Rotate around the joint's current LOCAL X-axis (transform.right)
-                // VectorUtils3D.right is the world-space right vector (1, 0, 0)
-                // To get the local X-axis, we need to rotate VectorUtils3D.right by ownQuad
-                axis = ownQuad.Rotate(VectorUtils3D.right);
-                deltaRot = new QuaternionUtils().AngleToQuaternion(axis, angle);
+                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, angleSpeed));
             }
-            else if (Input.GetKey(KeyCode.S))
+            else if (Input.GetKey(KeyCode.DownArrow))
             {
-                axis = ownQuad.Rotate(VectorUtils3D.right);
-                deltaRot = new QuaternionUtils().AngleToQuaternion(axis, -angle);
+                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, -angleSpeed));
             }
 
-            // --- Rotation around LOCAL Y-axis (Yaw / Left-Right) ---
-            if (Input.GetKey(KeyCode.A))
+            // Rotación Yaw (A/D) sobre el eje Y LOCAL
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
-                // Rotate around the joint's current LOCAL Y-axis (transform.up)
-                axis = ownQuad.Rotate(VectorUtils3D.up);
-                // Note: Use 'up' for yaw rotation unless your arm is built differently
-                deltaRot = new QuaternionUtils().AngleToQuaternion(axis, angle);
+                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, angleSpeed));
             }
-            else if (Input.GetKey(KeyCode.D))
+            else if (Input.GetKey(KeyCode.RightArrow))
             {
-                axis = ownQuad.Rotate(VectorUtils3D.up);
-                deltaRot = new QuaternionUtils().AngleToQuaternion(axis, -angle);
+                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, -angleSpeed));
             }
 
-            // Apply the accumulated rotation change if any
-            if (deltaRot != null)
+
+
+            if(isEndEffector)
             {
-                // Apply rotation accumulatedly: new_rotation = delta_rotation * current_rotation
-                // This is typically the order for local rotations
-                ownQuad.Multiply(deltaRot);
+                // Rotación Yaw (E/Q) sobre el eje Z LOCAL
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, angleSpeed));
+                }
+                else if (Input.GetKey(KeyCode.E))
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, -angleSpeed));
+                }
             }
+           
+
+            // Aplicamos la rotación LOCAL al cuaternión principal.
+            // La nueva orientación será la actual multiplicada por la rotación local de este frame.
+            ownQuad.Multiply(deltaRot);
+            ownQuad.Normalize();
         }
 
-        // --- Update Transform and Child Position ---
+       // Update Transform and Child Position
 
         // 1. Apply the final rotation to the GameObject's Transform
         transform.rotation = ownQuad.ToUnityQuaternion();
@@ -97,6 +106,8 @@ public class JointArm : MonoBehaviour
             // 3. Update the child's position
             // New position = Joint Position + (Forward Direction * Length)
             child.position = transform.position + currentForwardDir.GetAsUnityVector() * distanceToChild;
+            lr.SetPosition(0, transform.position);
+            lr.SetPosition(1, child.position);
         }
     }
 }
