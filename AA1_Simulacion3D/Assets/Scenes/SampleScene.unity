@@ -578,6 +578,7 @@ MonoBehaviour:
     type: 1
     currentDirection: 0
   wheelRotation: 20
+  wheelRadius: 20
 --- !u!1 &403826094
 GameObject:
   m_ObjectHideFlags: 0

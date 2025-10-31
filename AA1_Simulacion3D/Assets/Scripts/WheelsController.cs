@@ -5,6 +5,7 @@ public class WheelsController : MonoBehaviour
 {
     [SerializeField] List<Wheel> wheels;
     [SerializeField] float wheelRotation = 20f;
+    [SerializeField] float wheelRadius = 0.0365f;
 
     [System.Serializable]
     class Wheel
@@ -16,11 +17,21 @@ public class WheelsController : MonoBehaviour
     public enum Direction { LEFT, RIGHT, STRAIGHT };
     public enum WheelType { FRONT, BACK };
 
+    float angularVelocity = 0f;
+
     private void Start()
     {
         for (int i=0; i<wheels.Count;i++)
         {
             wheels[i].currentDirection = Direction.STRAIGHT;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        foreach (Wheel wheel in wheels)
+        {
+            //wheel.transform.Rotate(new Vector3(0, 0, angularVelocity*50));
         }
     }
 
@@ -58,6 +69,13 @@ public class WheelsController : MonoBehaviour
             wheel.transform.Rotate(new Vector3(0, rotation, 0));
             wheel.currentDirection = direction;
         }
+    }
+
+    public void UpdateAngularVelocity(float linearVelocity)
+    {
+        float newAngularVelocity = linearVelocity / wheelRadius;
+        angularVelocity = newAngularVelocity;
+        Debug.Log("Velocity updated: " + angularVelocity);
     }
 }
     

@@ -132,5 +132,12 @@ public class MyRobotController : MonoBehaviour
                 robotRB.linearVelocity = clampedVelocity.GetAsUnityVector();
             }
         }
+
+        VectorUtils3D newForwardDir = currentRotation.Rotate(VectorUtils3D.right);
+        VectorUtils3D newCurrentVelocity = VectorUtils3D.ToVectorUtils3D(robotRB.linearVelocity);
+
+        float forwardVelocity = newForwardDir.DotProduct(newCurrentVelocity);
+
+        wheelsScript.UpdateAngularVelocity(forwardVelocity);
     }
 }
