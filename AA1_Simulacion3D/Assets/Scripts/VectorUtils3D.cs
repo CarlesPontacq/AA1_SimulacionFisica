@@ -1,11 +1,12 @@
 
+using QuaternionUtility;
 using System.Diagnostics;
 using System.Numerics;
 
 public class VectorUtils3D
 {
     public float x, y, z;
-    public float PI = 3.14159265359f;
+    public static float PI = 3.14159265359f;
 
     public VectorUtils3D(float x, float y, float z)
     {

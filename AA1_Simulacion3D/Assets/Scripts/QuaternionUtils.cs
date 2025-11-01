@@ -37,8 +37,16 @@ namespace QuaternionUtility
             this.k = k;
         }
 
+        public QuaternionUtils(QuaternionUtils q)
+        {
+            this.w = q.w;
+            this.i = q.i;
+            this.j = q.j;
+            this.k = q.k;
+        }
 
-        
+
+
 
         /// <summary>
         /// THIS PASSES A CUATERNION AND A VECTOR AND RETURNS A QUATERNION ALREADY ANGLED
@@ -158,7 +166,7 @@ namespace QuaternionUtility
             // Pitch (y-axis rotation)
             float sinp = +2.0f * (q.w * q.j - q.k * q.i);
             if (System.MathF.Abs(sinp) >= 1)
-                output.y = CopySign(output.PI / 2, sinp); // use 90 degrees if out of range
+                output.y = CopySign(VectorUtils3D.PI / 2, sinp); // use 90 degrees if out of range
             else
                 output.y = System.MathF.Asin(sinp);
 
@@ -170,7 +178,10 @@ namespace QuaternionUtility
             return output;
         }
 
-
+        public float Dot(QuaternionUtils q)
+        {
+            return w * q.w + i * q.i + j * q.j + k * q.k;
+        }
         public float Norm()
         {
             return System.MathF.Sqrt(w * w + i * i + j * j + k * k);
@@ -188,6 +199,24 @@ namespace QuaternionUtility
 
         }
 
+        public static float AngleBetween(QuaternionUtils q1, QuaternionUtils q2)
+        {
+            float dot = q1.Dot(q2);
+
+            dot = Min(1f, Abs(dot));
+
+            return 2f * System.MathF.Acos(dot); 
+        }
+
+        public static float Abs(float x)
+        {
+            return x < 0f ? -x : x;
+        }
+
+        public static float Min(float a, float b)
+        {
+            return a < b ? a : b;
+        }
 
         public void Multiply(QuaternionUtils q)
         {

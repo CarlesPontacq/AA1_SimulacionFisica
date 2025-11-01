@@ -17,7 +17,17 @@ public class JointArm : MonoBehaviour
     VectorUtils3D childTrans = new VectorUtils3D();
     VectorUtils3D initialDir = new VectorUtils3D();
 
+
+
+    [SerializeField] float angleLimit = 50f; 
     float distanceToChild;
+
+    // Guardamos el estado de rotación actual de cada eje en radianes
+    float currentPitch = 0f;
+    float currentYaw = 0f;
+    float currentRoll = 0f;
+    float limitAngleRad; // Límite de ángulo en radianes
+
 
     void Start()
     {
@@ -25,6 +35,8 @@ public class JointArm : MonoBehaviour
         // Guardar posici�n y rotaci�n inicial
         ownQuad.AssignFromUnityQuaternion(transform.rotation);
         ownTrans = VectorUtils3D.ToVectorUtils3D(transform.position);
+
+        limitAngleRad = angleLimit * QuaternionUtils.Degree2Rad; 
 
         if (!isEndEffector && child != null)
         {
@@ -40,8 +52,8 @@ public class JointArm : MonoBehaviour
     void Update()
     {
 
-        // Initialize a temporary rotation change variable
-        QuaternionUtils deltaRot = new QuaternionUtils(); // Quaternión identidad (w=1) para este frame
+     
+        QuaternionUtils deltaRot = new QuaternionUtils(); // Quaternión de identidad
 
         if (isSelected)
         {
@@ -49,38 +61,68 @@ public class JointArm : MonoBehaviour
             float angleSpeed = 30f * Time.deltaTime * QuaternionUtils.Degree2Rad;
 
 
-            // Rotación Pitch (W/S) sobre el eje X LOCAL
+            // Rotación sobre el eje X LOCAL
             if (Input.GetKey(KeyCode.UpArrow))
             {
-                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, angleSpeed));
+                if(currentPitch + angleSpeed <= limitAngleRad)
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, angleSpeed));
+                    currentPitch += angleSpeed;
+                }
+                
             }
             else if (Input.GetKey(KeyCode.DownArrow))
             {
-                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, -angleSpeed));
+                if (currentPitch - angleSpeed >= -limitAngleRad)
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.right, -angleSpeed));
+                    currentPitch -= angleSpeed;
+                }
+                
             }
 
-            // Rotación Yaw (A/D) sobre el eje Y LOCAL
+            // Rotación sobre el eje Y LOCAL
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, angleSpeed));
+                if (currentPitch + angleSpeed <= limitAngleRad)
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, angleSpeed));
+                    currentPitch += angleSpeed;
+                }
+                
             }
             else if (Input.GetKey(KeyCode.RightArrow))
             {
-                deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, -angleSpeed));
+                if (currentPitch - angleSpeed >= -limitAngleRad)
+                {
+                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.up, -angleSpeed));
+                    currentPitch -= angleSpeed;
+                }
+                
             }
 
 
 
             if(isEndEffector)
             {
-                // Rotación Yaw (E/Q) sobre el eje Z LOCAL
+                // Rotación sobre el eje Z LOCAL
                 if (Input.GetKey(KeyCode.Q))
                 {
-                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, angleSpeed));
+                    if (currentPitch + angleSpeed <= limitAngleRad)
+                    {
+                        deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, angleSpeed));
+                        currentPitch += angleSpeed;
+                    }
+                    
                 }
                 else if (Input.GetKey(KeyCode.E))
                 {
-                    deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, -angleSpeed));
+                    if (currentPitch - angleSpeed >= -limitAngleRad)
+                    {
+                        deltaRot.Multiply(new QuaternionUtils().AngleToQuaternion(VectorUtils3D.forward, -angleSpeed));
+                        currentPitch -= angleSpeed;
+                    }
+                    
                 }
             }
            
@@ -99,8 +141,6 @@ public class JointArm : MonoBehaviour
         if (!isEndEffector && child != null)
         {
             // 2. Calculate the joint's current local forward direction
-            // The transform.forward is calculated automatically by Unity based on transform.rotation
-            // Here, we calculate it using our QuaternionUtils (which should match transform.rotation now)
             VectorUtils3D currentForwardDir = ownQuad.Rotate(VectorUtils3D.forward);
 
             // 3. Update the child's position
