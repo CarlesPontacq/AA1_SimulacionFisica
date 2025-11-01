@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using QuaternionUtility;
 
 public class WheelsController : MonoBehaviour
 {
@@ -12,8 +13,14 @@ public class WheelsController : MonoBehaviour
     {
         public Transform transform;
         public WheelType type;
-        public Direction currentDirection;
+
+        [HideInInspector] public Direction currentDirection;
+        [HideInInspector] public float steeringAngle = 0f;
+        [HideInInspector] public float rollAngle = 0f;
+        [HideInInspector] public QuaternionUtils baseRotation;
+        [HideInInspector] public VectorUtils3D position;
     }
+
     public enum Direction { LEFT, RIGHT, STRAIGHT };
     public enum WheelType { FRONT, BACK };
 
@@ -21,9 +28,19 @@ public class WheelsController : MonoBehaviour
 
     private void Start()
     {
-        for (int i=0; i<wheels.Count;i++)
+        foreach (var wheel in wheels)
         {
-            wheels[i].currentDirection = Direction.STRAIGHT;
+            wheel.currentDirection = Direction.STRAIGHT;
+            wheel.steeringAngle = 0f;
+            wheel.rollAngle = 0f;
+
+            // Guardar la rotación y posición base de cada rueda
+
+            wheel.baseRotation = new QuaternionUtils();
+            wheel.baseRotation.AssignFromUnityQuaternion(wheel.transform.localRotation);
+
+            Vector3 unityPos = wheel.transform.localPosition;
+            wheel.position = new VectorUtils3D(unityPos.x, unityPos.y, unityPos.z);
         }
     }
 
@@ -31,7 +48,24 @@ public class WheelsController : MonoBehaviour
     {
         foreach (Wheel wheel in wheels)
         {
-            //wheel.transform.Rotate(new Vector3(0, 0, angularVelocity*50));
+            // Calcular la rotación que hay que hacer este frame
+            wheel.rollAngle += angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime;
+
+            // Preparar los quaternions de las rotaciones
+            QuaternionUtils steerRot = new QuaternionUtils();
+            steerRot.FromYRotation(wheel.steeringAngle * Mathf.Deg2Rad);
+
+            QuaternionUtils rollRot = new QuaternionUtils();
+            rollRot.FromZRotation(wheel.rollAngle * Mathf.Deg2Rad);
+
+            // Combinar rotaciones
+            QuaternionUtils finalRot = new QuaternionUtils();
+            finalRot.AssignFromUnityQuaternion(wheel.baseRotation.GetAsUnityQuaternion());
+            finalRot.Multiply(steerRot);
+            finalRot.Multiply(rollRot);
+
+            // Aplicar resultado a la rueda
+            wheel.transform.localRotation = finalRot.GetAsUnityQuaternion();    
         }
     }
 
@@ -39,43 +73,29 @@ public class WheelsController : MonoBehaviour
     {
         foreach (Wheel wheel in wheels)
         {
-            if (wheel.type == WheelType.BACK || wheel.currentDirection == direction) continue;
+            // Se ignoran las ruedas de atrás (porque no tienen este tipo de giro) y las ruedas que ya están bien giradas
+            if (wheel.type == WheelType.BACK || wheel.currentDirection == direction)
+                continue;
 
-            Vector3 original = wheel.transform.localEulerAngles;
-
-            float rotation = 0f;
+            // Calcular el ángulo objetivo al que se quiere llegar en base a la dirección de giro
+            float targetAngle = 0f;
             switch (direction)
             {
-                case Direction.LEFT:
-                    if (wheel.currentDirection == Direction.RIGHT)
-                        rotation = -wheelRotation * 2;
-                    else
-                        rotation = -wheelRotation;
-                    break;
-                case Direction.RIGHT:
-                    if (wheel.currentDirection == Direction.RIGHT)
-                        rotation = wheelRotation * 2;
-                    else
-                        rotation = wheelRotation;
-                    break;
-                case Direction.STRAIGHT:
-                    if (wheel.currentDirection == Direction.LEFT)
-                        rotation = wheelRotation;
-                    else
-                        rotation = -wheelRotation;
-                    break;
+                case Direction.LEFT: targetAngle = -wheelRotation; break;
+                case Direction.RIGHT: targetAngle = wheelRotation; break;
+                case Direction.STRAIGHT: targetAngle = 0f; break;
             }
 
-            wheel.transform.Rotate(new Vector3(0, rotation, 0));
+            // Guardar el ángulo y la dirección en las variables de la propia rueda
+            wheel.steeringAngle = targetAngle;
             wheel.currentDirection = direction;
         }
     }
 
+    // Actualizar la velocidad angular de las ruedas en base a la velocidad lineal a la que va el robot (y pasarlo a m/s)
     public void UpdateAngularVelocity(float linearVelocity)
     {
-        float newAngularVelocity = linearVelocity / wheelRadius;
-        angularVelocity = newAngularVelocity;
+        angularVelocity = -linearVelocity / wheelRadius;
         Debug.Log("Velocity updated: " + angularVelocity);
     }
 }
-    

@@ -568,17 +568,25 @@ MonoBehaviour:
   - transform: {fileID: 894217642}
     type: 0
     currentDirection: 0
+    steeringAngle: 0
+    rollAngle: 0
   - transform: {fileID: 97505852}
     type: 0
     currentDirection: 0
+    steeringAngle: 0
+    rollAngle: 0
   - transform: {fileID: 1083112322}
     type: 1
     currentDirection: 0
+    steeringAngle: 0
+    rollAngle: 0
   - transform: {fileID: 747820944}
     type: 1
     currentDirection: 0
+    steeringAngle: 0
+    rollAngle: 0
   wheelRotation: 20
-  wheelRadius: 20
+  wheelRadius: 0.365
 --- !u!1 &403826094
 GameObject:
   m_ObjectHideFlags: 0
