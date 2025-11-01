@@ -277,7 +277,7 @@ MonoBehaviour:
   - {fileID: 16}
   - {fileID: 17}
   m_Selected: 0
-  m_LastSelected: 0
+  m_LastSelected: 1
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1201,10 +1201,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Animator\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 208.8
-    y: 73.6
-    width: 929.2
-    height: 435.8
+    x: 336
+    y: 79
+    width: 724
+    height: 566
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1376,7 +1376,7 @@ MonoBehaviour:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: c62300003edd0000be740000c46d0000e8950000d09c0000e0740000da7400006c7300000cf300009a7500008eee0000c4880000ca7f0100947f000078330000589300008a700000debc00001080000052820000000000003a870000988800003c3d0000
+    m_ExpandedInstanceIDs: c62300003edd0000be740000c46d0000e8950000d09c0000e0740000da7400006c7300000cf300009a7500008eee0000c4880000ca7f0100947f000078330000589300008a700000debc00001080000052820000000000003a870000988800003c3d0000b2a60000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
