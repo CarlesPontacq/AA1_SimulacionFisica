@@ -291,6 +291,7 @@ MonoBehaviour:
   isSelected: 0
   child: {fileID: 0}
   lr: {fileID: 0}
+  angleLimit: 120
 --- !u!135 &458267993
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -491,6 +492,7 @@ MonoBehaviour:
   isSelected: 0
   child: {fileID: 1347222820}
   lr: {fileID: 531566735}
+  angleLimit: 100
 --- !u!120 &531566735
 LineRenderer:
   serializedVersion: 2
@@ -724,6 +726,7 @@ MonoBehaviour:
   isSelected: 0
   child: {fileID: 458267991}
   lr: {fileID: 747973477}
+  angleLimit: 120
 --- !u!120 &747973477
 LineRenderer:
   serializedVersion: 2
@@ -957,6 +960,7 @@ MonoBehaviour:
   isSelected: 0
   child: {fileID: 747973475}
   lr: {fileID: 1347222822}
+  angleLimit: 120
 --- !u!120 &1347222822
 LineRenderer:
   serializedVersion: 2
