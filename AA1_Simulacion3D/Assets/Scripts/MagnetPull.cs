@@ -96,12 +96,15 @@ public class MagnetPull : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            //Activamos o desactivamos el pulso magnetico
             isMagneticPullOn = !isMagneticPullOn;
-            Debug.Log(isMagneticPullOn);
+
+            //Si esta activo el objeto puede pegarse
             if (isMagneticPullOn)
             {
                 pendingAttach = true;
             }
+            //Si no lo esta y el attachedGameObject es nulo se despega del objeto y restaura sus físicas
             else if (attachedGameObject != null)
             { 
                 pendingAttach= false;
