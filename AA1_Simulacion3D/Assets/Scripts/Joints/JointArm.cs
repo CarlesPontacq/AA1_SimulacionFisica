@@ -13,6 +13,8 @@ public class JointArm : MonoBehaviour
     [SerializeField] public Material regularMaterial;
     [SerializeField] public Material selectedMaterial;
 
+    [SerializeField] public float movementSpeed;
+
     QuaternionUtils ownQuad = new QuaternionUtils();
     VectorUtils3D ownTrans = new VectorUtils3D();
     VectorUtils3D childTrans = new VectorUtils3D();
@@ -57,7 +59,7 @@ public class JointArm : MonoBehaviour
         if (isSelected)
         {
             // Velocidad de rotación en radianes
-            float angleSpeed = 30f * Time.deltaTime * QuaternionUtils.Degree2Rad;
+            float angleSpeed = movementSpeed * Time.deltaTime * QuaternionUtils.Degree2Rad;
 
             // Rotación sobre el eje X LOCAL
             if (Input.GetKey(KeyCode.LeftArrow))
