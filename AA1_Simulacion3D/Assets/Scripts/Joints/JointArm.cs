@@ -10,6 +10,8 @@ public class JointArm : MonoBehaviour
     [SerializeField] Transform child;
     [SerializeField] LineRenderer lr;
 
+    [SerializeField] public Material regularMaterial;
+    [SerializeField] public Material selectedMaterial;
 
     QuaternionUtils ownQuad = new QuaternionUtils();
     VectorUtils3D ownTrans = new VectorUtils3D();
@@ -18,18 +20,16 @@ public class JointArm : MonoBehaviour
     //Rotacion Inicial
     QuaternionUtils initialQuad = new QuaternionUtils();
 
-
-
     [SerializeField] float angleLimit = 50f; 
     float distanceToChild;
 
 
     float limitAngleRad; // Límite de ángulo en radianes
 
+    MeshRenderer meshRenderer;
 
     void Start()
     {
-        
         // Guardar posicion y rotacion inicial
         ownQuad.AssignFromUnityQuaternion(transform.rotation);
         ownTrans = VectorUtils3D.ToVectorUtils3D(transform.position);
@@ -45,6 +45,7 @@ public class JointArm : MonoBehaviour
             lr.positionCount = 2;
         }
 
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     void Update()
@@ -127,5 +128,17 @@ public class JointArm : MonoBehaviour
             lr.SetPosition(0, transform.position);
             lr.SetPosition(1, child.position);
         }
+    }
+
+    public void Select()
+    {
+        meshRenderer.material = selectedMaterial;
+        isSelected = true;
+    }
+
+    public void Unselect()
+    {
+        meshRenderer.material = regularMaterial;
+        isSelected = false;
     }
 }
