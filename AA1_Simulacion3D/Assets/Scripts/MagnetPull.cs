@@ -24,7 +24,7 @@ public class MagnetPull : MonoBehaviour
         endEffectorRot.AssignFromUnityQuaternion(endEffector.transform.rotation);
 
         //Añadimos un offset hacia arriba para que no este pegado dentro del endEffector
-        VectorUtils3D offset = new VectorUtils3D(0, endEffector.GetComponent<SphereCollider>().radius * 2, 0);
+        VectorUtils3D offset = new VectorUtils3D(0, endEffector.GetComponent<SphereCollider>().radius * 1.3f, 0);
         VectorUtils3D rotatedOffset = endEffectorRot.Rotate(offset);
         VectorUtils3D magnetPos = endEffectorPos + rotatedOffset;
 
