@@ -8,8 +8,8 @@ public class MagnetPull : MonoBehaviour
     bool pendingAttach = false;
 
     public GameObject attachedGameObject;   // Objeto actualmente pegado
-    VectorUtils3D localOffset;      // Offset de posici髇 relativa
-    QuaternionUtils localRotation;  // Rotaci髇 relativa
+    VectorUtils3D localOffset;      // Offset de posici贸n relativa
+    QuaternionUtils localRotation;  // Rotaci贸n relativa
 
     void Start()
     {
@@ -18,32 +18,41 @@ public class MagnetPull : MonoBehaviour
 
     void Update()
     {
-        //Convertir la posici髇 y rotaci髇 del EndEffector a tus tipos personalizados
+        //Convertir la posici贸n y rotaci贸n del EndEffector a tus tipos personalizados
         VectorUtils3D endEffectorPos = VectorUtils3D.ToVectorUtils3D(endEffector.transform.position);
         QuaternionUtils endEffectorRot = new QuaternionUtils();
         endEffectorRot.AssignFromUnityQuaternion(endEffector.transform.rotation);
 
-        //A馻dimos un offset hacia arriba para que no este pegado dentro del endEffector
+        //A帽adimos un offset hacia arriba para que no este pegado dentro del endEffector
         VectorUtils3D offset = new VectorUtils3D(0, endEffector.GetComponent<SphereCollider>().radius * 1.3f, 0);
         VectorUtils3D rotatedOffset = endEffectorRot.Rotate(offset);
         VectorUtils3D magnetPos = endEffectorPos + rotatedOffset;
 
-        //Aplicamos posici髇 y rotaci髇 al objeto con MagnetPull
+        //Aplicamos posici贸n y rotaci贸n al objeto con MagnetPull
         transform.position = magnetPos.GetAsUnityVector();
         transform.rotation = endEffectorRot.GetAsUnityQuaternion();
 
         if(attachedGameObject != null)
         {
-            // Posici髇 relativa
-            VectorUtils3D worldOffset = endEffectorRot.Rotate(localOffset);
-            VectorUtils3D objectPos = magnetPos + worldOffset;
 
-            QuaternionUtils worldRot = new QuaternionUtils();
-            worldRot.AssignFromUnityQuaternion(transform.rotation);
-            worldRot.Multiply(localRotation);
+            //Calcular rotaci贸n del im谩n
+            QuaternionUtils magnetRot = new QuaternionUtils();
+            magnetRot.AssignFromUnityQuaternion(transform.rotation);
 
+            //Offset hacia arriba en el eje local Y del im谩n
+            float magnetRadius = GetComponent<SphereCollider>().radius;
+            VectorUtils3D upwardOffset = new VectorUtils3D(0, magnetRadius, 0);
+            VectorUtils3D rotatedUpwardOffset = magnetRot.Rotate(upwardOffset);
+
+            //Calcular posici贸n base del objeto (im谩n + su offset)
+            VectorUtils3D objectPos = magnetPos + rotatedUpwardOffset;
+
+            //Calcular rotaci贸n global del objeto pegado
+            magnetRot.Multiply(localRotation);
+
+            //Asignar posici贸n y rotaci贸n al objeto pegado
             attachedGameObject.transform.position = objectPos.GetAsUnityVector();
-            attachedGameObject.transform.rotation = worldRot.ToUnityQuaternion();
+            attachedGameObject.transform.rotation = magnetRot.ToUnityQuaternion();
         }
     }
 
@@ -67,7 +76,7 @@ public class MagnetPull : MonoBehaviour
             attachedGameObject = collision.gameObject;
             Transform targetTransform = attachedGameObject.transform;
 
-            //Guardamos la posici髇 y rotaci髇 relativas al im醤
+            //Guardamos la posici贸n y rotaci贸n relativas al im谩n
             VectorUtils3D magnetPos = VectorUtils3D.ToVectorUtils3D(transform.position);
             VectorUtils3D targetPos = VectorUtils3D.ToVectorUtils3D(targetTransform.position);
             localOffset = targetPos - magnetPos;
@@ -79,10 +88,10 @@ public class MagnetPull : MonoBehaviour
             QuaternionUtils targetRot = new QuaternionUtils();
             targetRot.AssignFromUnityQuaternion(targetTransform.rotation);
 
-            //Guardamos la rotaci髇 relativa = rot_target * inverse(rot_im醤)
+            //Guardamos la rotaci贸n relativa = rot_target * inverse(rot_im谩n)
             localRotation = targetRot.MultiplyWithInverse(magnetRot);
 
-            //Desactivamos las f韘icas del objeto para que no interfiera
+            //Desactivamos las f铆sicas del objeto para que no interfiera
             Rigidbody rb = attachedGameObject.GetComponent<Rigidbody>();
             if (rb != null)
             {
@@ -104,7 +113,7 @@ public class MagnetPull : MonoBehaviour
             {
                 pendingAttach = true;
             }
-            //Si no lo esta y el attachedGameObject es nulo se despega del objeto y restaura sus f韘icas
+            //Si no lo esta y el attachedGameObject es nulo se despega del objeto y restaura sus f铆sicas
             else if (attachedGameObject != null)
             { 
                 pendingAttach= false;
