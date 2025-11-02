@@ -96,6 +96,5 @@ public class WheelsController : MonoBehaviour
     public void UpdateAngularVelocity(float linearVelocity)
     {
         angularVelocity = -linearVelocity / wheelRadius;
-        Debug.Log("Velocity updated: " + angularVelocity);
     }
 }
